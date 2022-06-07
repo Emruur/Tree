@@ -1,64 +1,77 @@
 
 class TreeNode<TreeType>{
-    pos: p5.Vector
     item: TreeType
     left: TreeNode<TreeType>
     right: TreeNode<TreeType>
+    height:number
 
     constructor(item: TreeType){
         this.item= item
         this.left= null
         this.right= null
+        this.height= 1
     }
 }
 
 class BinarySearchTree<TreeType>{
     private head: TreeNode<TreeType>
     size:number
+    height: number
 
     constructor(){
         this.head= null
         this.size= 0
+        this.height= 0
     }
 
-    add(item: TreeType){
-        let curr= this.head
-        let parent: TreeNode<TreeType>= null
-        let isLeft: boolean
+    updateHeight(){
+        this.height= this.updateTreeHeight(this.head)
+    }
 
-        //Locate the place to insert the node
-        while(curr != null){
-            parent= curr
-            if(item<curr.item){
-                curr= curr.left
-                isLeft= true
-            } 
-            else{
-                curr= curr.right
-                isLeft= false
-            }
-        }  
+    private updateTreeHeight(node: TreeNode<TreeType>): number
+    {
+        if(!node)
+            return 0
 
-        //curr points to the valid leaf
-        //create a new node
-        let newNode= new TreeNode<TreeType>(item)
+        let height:number= max(this.updateTreeHeight(node.left), this.updateTreeHeight(node.right)) + 1
+        node.height= height
+        return height
+    }
 
-        if(parent)
-            if(isLeft)
-                parent.left= newNode
-            else
-                parent.right= newNode
-        else
-            this.head= newNode
+    add(data: TreeType)
+    {
+        this.head= this.addNode(this.head, data)
+        this.updateHeight()
+    }
 
-        this.size++
+    private addNode(node: TreeNode<TreeType>, key: TreeType): TreeNode<TreeType>
+    {
+        
+        
+        if(!node)
+            node=  new TreeNode(key)
+        
+        else if(key < node.item)
+        {
+            node.left= this.addNode(node.left, key)
+            
+        }
+        else{
+            node.right= this.addNode(node.right, key)
+            
+        }
+
+        //fix unbalances
+        if(node.left.height - node.right.height)
+
+        return node
+
     }
 
     remove(data: TreeType)
     {
-        // root is re-initialized with
-        // root of a modified tree.
-        this.head = this.removeNode(this.head, data);
+        this.head = this.removeNode(this.head, data)
+        this.updateHeight()
     }
  
 
@@ -138,19 +151,54 @@ class BinarySearchTree<TreeType>{
             return this.findMinNode(node.left);
     }
 
+      //right rotate
+    rightRotate(y: TreeNode<TreeType>)
+    {
+        let x = y.left;
+        let T2 = x.right;
+        x.right = y;
+        y.left = T2;
+        this.updateHeight()
+        return x;
+    }
+  
+    //left rotate
+    leftRotate(x: TreeNode<TreeType>)
+    {
+        let y = x.right;
+        let T2 = y.left;
+        y.left = x;
+        x.right = T2;
+        this.updateHeight()
+        return y;
+    }
+
+    leftRightRotate(node: TreeNode<TreeType>)
+    {
+        node.left= this.leftRotate(node.left)
+        node= this.rightRotate(node)
+        return node
+    }
+    rightLeftRotate(node: TreeNode<TreeType>)
+    {
+        node.right= this.rightRotate(node.right)
+        node= this.leftRotate(node)
+        return node
+    }
 
 
-
-    drawTree(){
+    drawTree()
+    {
         let radius= width/31
         let initialPos: p5.Vector= createVector(width/2, 2*radius)
         this.drawTreeHelper(this.head, initialPos, radius,0)
     }
 
-    private drawTreeHelper(node: TreeNode<TreeType>, pos: p5.Vector, radius: number, height: number){
-        if(!node){
+    private drawTreeHelper(node: TreeNode<TreeType>, pos: p5.Vector, radius: number, height: number)
+    {
+        if(!node)
             return
-        }
+        
         fill(100,100,200)
         
         let leftPos= pos.copy().add(-radius*39/(height+2)**2.25, radius*3)
@@ -173,7 +221,7 @@ class BinarySearchTree<TreeType>{
         strokeWeight(1)
         textSize(radius/3)
         textAlign('center','center')
-        text(node.item.toString() ,pos.x , pos.y)
+        text(node.item.toString() + "-" +node.height.toString(),pos.x , pos.y)
 
         //draw child trees
         this.drawTreeHelper(node.left,leftPos,radius,height+1)

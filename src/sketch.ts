@@ -1,4 +1,4 @@
-let bst: BinarySearchTree<string>
+let bst: BinarySearchTree<number>
 
 
 function setup() {
@@ -6,14 +6,17 @@ function setup() {
   createCanvas(windowWidth, windowHeight)
   rectMode(CENTER).noFill().frameRate(30);
 
-  bst= new BinarySearchTree<string>()
+  bst= new BinarySearchTree<number>()
+  bst.add(10)
+  bst.add(6)
+  bst.add(3)
+  bst.add(7)
+  bst.add(1)
+  bst.add(2)
+  bst.add(14)
+  bst.add(13)
+  bst.add(11)
   
-  bst.add('h');
-  bst.add('a');
-  bst.add('b');
-  bst.add('z');
-  bst.add('x');
-  bst.add('c');
 }
 
 
