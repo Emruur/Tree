@@ -1,20 +1,19 @@
-var TreeNode = (function () {
-    function TreeNode(item) {
+class TreeNode {
+    constructor(item) {
         this.item = item;
         this.left = null;
         this.right = null;
     }
-    return TreeNode;
-}());
-var BinarySearchTree = (function () {
-    function BinarySearchTree() {
+}
+class BinarySearchTree {
+    constructor() {
         this.head = null;
         this.size = 0;
     }
-    BinarySearchTree.prototype.add = function (item) {
-        var curr = this.head;
-        var parent = null;
-        var isLeft;
+    add(item) {
+        let curr = this.head;
+        let parent = null;
+        let isLeft;
         while (curr != null) {
             parent = curr;
             if (item < curr.item) {
@@ -26,7 +25,7 @@ var BinarySearchTree = (function () {
                 isLeft = false;
             }
         }
-        var newNode = new TreeNode(item);
+        let newNode = new TreeNode(item);
         if (parent)
             if (isLeft)
                 parent.left = newNode;
@@ -35,19 +34,58 @@ var BinarySearchTree = (function () {
         else
             this.head = newNode;
         this.size++;
-    };
-    BinarySearchTree.prototype.drawTree = function () {
-        var radius = 50;
-        var initialPos = createVector(width / 2, 2 * radius);
+    }
+    remove(data) {
+        this.head = this.removeNode(this.head, data);
+    }
+    removeNode(node, key) {
+        if (node === null)
+            return null;
+        else if (key < node.item) {
+            node.left = this.removeNode(node.left, key);
+            return node;
+        }
+        else if (key > node.item) {
+            node.right = this.removeNode(node.right, key);
+            return node;
+        }
+        else {
+            if (node.left === null && node.right === null) {
+                node = null;
+                return node;
+            }
+            if (node.left === null) {
+                node = node.right;
+                return node;
+            }
+            else if (node.right === null) {
+                node = node.left;
+                return node;
+            }
+            var aux = this.findMinNode(node.right);
+            node.item = aux.item;
+            node.right = this.removeNode(node.right, aux.item);
+            return node;
+        }
+    }
+    findMinNode(node) {
+        if (node.left === null)
+            return node;
+        else
+            return this.findMinNode(node.left);
+    }
+    drawTree() {
+        let radius = width / 31;
+        let initialPos = createVector(width / 2, 2 * radius);
         this.drawTreeHelper(this.head, initialPos, radius, 0);
-    };
-    BinarySearchTree.prototype.drawTreeHelper = function (node, pos, radius, height) {
+    }
+    drawTreeHelper(node, pos, radius, height) {
         if (!node) {
             return;
         }
         fill(100, 100, 200);
-        var leftPos = pos.copy().add(-radius * 9 / Math.pow((height + 1), 1.8), radius * 2);
-        var rightPos = pos.copy().add(radius * 9 / Math.pow((height + 1), 1.8), radius * 2);
+        let leftPos = pos.copy().add(-radius * 39 / (height + 2) ** 2.25, radius * 3);
+        let rightPos = pos.copy().add(radius * 39 / (height + 2) ** 2.25, radius * 3);
         strokeWeight(5);
         stroke(90, 80, 100);
         if (node.left)
@@ -63,45 +101,19 @@ var BinarySearchTree = (function () {
         text(node.item.toString(), pos.x, pos.y);
         this.drawTreeHelper(node.left, leftPos, radius, height + 1);
         this.drawTreeHelper(node.right, rightPos, radius, height + 1);
-    };
-    return BinarySearchTree;
-}());
-var bst;
+    }
+}
+let bst;
 function setup() {
     createCanvas(windowWidth, windowHeight);
     rectMode(CENTER).noFill().frameRate(30);
     bst = new BinarySearchTree();
-    bst.add(4);
-    bst.add(2);
-    bst.add(1);
-    bst.add(3);
-    bst.add(6);
-    bst.add(5);
-    bst.add(7);
-    bst.add(0.5);
-    bst.add(1.5);
-    bst.add(2.5);
-    bst.add(3.5);
-    bst.add(4.5);
-    bst.add(5.5);
-    bst.add(6.5);
-    bst.add(7.5);
-    bst.add(0.25);
-    bst.add(0.75);
-    bst.add(1.25);
-    bst.add(1.75);
-    bst.add(2.25);
-    bst.add(2.75);
-    bst.add(3.25);
-    bst.add(3.75);
-    bst.add(4.25);
-    bst.add(4.75);
-    bst.add(5.25);
-    bst.add(5.75);
-    bst.add(6.25);
-    bst.add(6.75);
-    bst.add(7.25);
-    bst.add(7.75);
+    bst.add('h');
+    bst.add('a');
+    bst.add('b');
+    bst.add('z');
+    bst.add('x');
+    bst.add('c');
     console.log(bst);
 }
 function windowResized() {
