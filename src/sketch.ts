@@ -16,6 +16,8 @@ function setup() {
   bst.add(14)
   bst.add(13)
   bst.add(11)
+
+  console.log("-----------Initializtion complete----------")
   
 }
 

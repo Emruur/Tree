@@ -41,29 +41,60 @@ class BinarySearchTree<TreeType>{
     add(data: TreeType)
     {
         this.head= this.addNode(this.head, data)
-        this.updateHeight()
     }
 
     private addNode(node: TreeNode<TreeType>, key: TreeType): TreeNode<TreeType>
     {
-        
-        
         if(!node)
+        {
             node=  new TreeNode(key)
-        
+        }
         else if(key < node.item)
         {
             node.left= this.addNode(node.left, key)
             
         }
         else{
-            node.right= this.addNode(node.right, key)
-            
+            node.right= this.addNode(node.right, key)  
         }
 
         //fix unbalances
-        if(node.left.height - node.right.height)
 
+        //calculate balance factor for current node
+        //TODO very expensive updating height this vay
+        this.updateHeight()
+
+        if(this.getBalanceFactor(node)>1){
+            //right rotation
+            if(key> node.left.item)
+            {
+                //double rotation
+                node = this.leftRightRotate(node)
+                this.updateHeight()
+            }
+            else
+            {
+                //single rotation
+                node = this.rightRotate(node)
+                this.updateHeight() 
+            }
+        }
+        else if(this.getBalanceFactor(node)<-1)
+        {
+            //left rotation , right heavy
+            if(key< node.right.item)
+            {
+                //double rotation
+                node = this.rightLeftRotate(node)
+                this.updateHeight()
+            }
+            else
+            {
+                //single rotation
+                node = this.leftRotate(node)
+                this.updateHeight() 
+            }
+        }
         return node
 
     }
@@ -103,8 +134,6 @@ class BinarySearchTree<TreeType>{
             return node;
         }
     
-        // if data is similar to the root's data
-        // then delete this node
         else
         {
             // deleting node with no children
@@ -158,7 +187,6 @@ class BinarySearchTree<TreeType>{
         let T2 = x.right;
         x.right = y;
         y.left = T2;
-        this.updateHeight()
         return x;
     }
   
@@ -169,7 +197,6 @@ class BinarySearchTree<TreeType>{
         let T2 = y.left;
         y.left = x;
         x.right = T2;
-        this.updateHeight()
         return y;
     }
 
@@ -184,6 +211,22 @@ class BinarySearchTree<TreeType>{
         node.right= this.rightRotate(node.right)
         node= this.leftRotate(node)
         return node
+    }
+
+    getBalanceFactor (node: TreeNode<TreeType>): number
+    {
+        if (node == null){
+          return 0;
+        }
+
+        return this.getHeight(node.left) - this.getHeight(node.right);
+    }
+
+    getHeight(node: TreeNode<TreeType>): number
+    {
+        if(!node)
+            return 0
+        return node.height
     }
 
 

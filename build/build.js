@@ -24,19 +24,39 @@ class BinarySearchTree {
     }
     add(data) {
         this.head = this.addNode(this.head, data);
-        this.updateHeight();
     }
     addNode(node, key) {
-        if (!node)
+        if (!node) {
             node = new TreeNode(key);
+        }
         else if (key < node.item) {
             node.left = this.addNode(node.left, key);
         }
         else {
             node.right = this.addNode(node.right, key);
         }
-        if (node.left.height - node.right.height)
-            return node;
+        this.updateHeight();
+        if (this.getBalanceFactor(node) > 1) {
+            if (key > node.left.item) {
+                node = this.leftRightRotate(node);
+                this.updateHeight();
+            }
+            else {
+                node = this.rightRotate(node);
+                this.updateHeight();
+            }
+        }
+        else if (this.getBalanceFactor(node) < -1) {
+            if (key < node.right.item) {
+                node = this.rightLeftRotate(node);
+                this.updateHeight();
+            }
+            else {
+                node = this.leftRotate(node);
+                this.updateHeight();
+            }
+        }
+        return node;
     }
     remove(data) {
         this.head = this.removeNode(this.head, data);
@@ -83,7 +103,6 @@ class BinarySearchTree {
         let T2 = x.right;
         x.right = y;
         y.left = T2;
-        this.updateHeight();
         return x;
     }
     leftRotate(x) {
@@ -91,7 +110,6 @@ class BinarySearchTree {
         let T2 = y.left;
         y.left = x;
         x.right = T2;
-        this.updateHeight();
         return y;
     }
     leftRightRotate(node) {
@@ -103,6 +121,17 @@ class BinarySearchTree {
         node.right = this.rightRotate(node.right);
         node = this.leftRotate(node);
         return node;
+    }
+    getBalanceFactor(node) {
+        if (node == null) {
+            return 0;
+        }
+        return this.getHeight(node.left) - this.getHeight(node.right);
+    }
+    getHeight(node) {
+        if (!node)
+            return 0;
+        return node.height;
     }
     drawTree() {
         let radius = width / 31;
@@ -146,6 +175,7 @@ function setup() {
     bst.add(14);
     bst.add(13);
     bst.add(11);
+    console.log("-----------Initializtion complete----------");
 }
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
